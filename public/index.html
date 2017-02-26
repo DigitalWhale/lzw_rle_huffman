@@ -3,12 +3,59 @@
 <head>
     <meta HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8">
     <title>Compression Test</title>
-
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
 </head>
 <body>
-    <h1>hello!</h1>
+
+<video autoplay id="vid"></video>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" style="background-color: #fdeeff;">
+
+            <div class="col-xs-6 col-sm-12">
+                    <canvas id="vidCanv" style="background-color: #000000; width: 100%"></canvas>
+            </div>
+
+            <div class="col-xs-3 col-sm-12">
+                    <canvas style="background-color: #595959; width: 100%"></canvas>
+            </div>
+
+            <div class="col-xs-3 col-sm-12">
+                    <canvas style="background-color: #aaaaaa; width: 100%"></canvas>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8" style="background-color: #e7f8ff; height: 500px;">
+            <div class="row">
+                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                 <canvas id="canvHaffman" style="background-color: #074e08; width: 100%"></canvas>
+                 </div>
+                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                 <canvas style="background-color: #11bf14; width: 100%"></canvas>
+                 </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <canvas style="background-color: #4e0303; width: 100%"></canvas>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <canvas style="background-color: #bf0c10; width: 100%"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <canvas style="background-color: #040a4e; width: 100%"></canvas>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <canvas style="background-color: #0d22bf; width: 100%"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="./javascripts/jquery.min.js"></script>
     <script src="./javascripts/socket.io.js"></script>
     <script src="./javascripts/script.js"></script>
+
 </body>
 </html>

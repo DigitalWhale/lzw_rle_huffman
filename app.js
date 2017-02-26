@@ -5,7 +5,7 @@ let path = require('path');
 // let bodyParser = require('body-parser');
 
 let index = require('./routes/index');
-// let users = require('./routes/users');
+let bmptest = require('./routes/bmptest');
 
 let app = express();
 
@@ -19,7 +19,7 @@ app.set("port", 8888);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/", index);
-
+app.use("/bmptest", bmptest);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   let err = new Error('Not Found');
