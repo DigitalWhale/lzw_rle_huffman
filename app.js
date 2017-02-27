@@ -5,7 +5,6 @@ let path = require('path');
 // let bodyParser = require('body-parser');
 
 let index = require('./routes/index');
-let bmptest = require('./routes/bmptest');
 
 let app = express();
 
