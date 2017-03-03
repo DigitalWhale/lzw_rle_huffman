@@ -20,7 +20,7 @@ module.exports.start  = () => {
 
         //Тест отправки видео назад
         client.on("sendVideo", (req) => {
-           png_archivator.archivator(req.imageData);
+           png_archivator.encode(req.imageData);
             // client.emit("resultVideo", {req});
         });
     });

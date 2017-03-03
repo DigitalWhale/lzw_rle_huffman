@@ -33,7 +33,49 @@ let dSortInvert = (arr, index, typeSort) => {
 };
 
 
-module.exports.archivator = (base64) => {
+let createCodeTable = (imgData) => {
+    let b = Date.now();
+    let table = [];
+    let endTable = {};
+    for (let i = 0; i< 256; i++){
+        table.push({'name': i, 'stat': 1});
+    }
+    for(let i = 0, dataLength = imgData.length; i < dataLength; i++) {
+        table[imgData[i]].stat++
+    }
+    b = Date.now() - b;
+    logger.info("Заполнение массива " + b);
+    b = Date.now();
+    table.sort();
+    b = Date.now() - b;
+    logger.info("Cортровка массива " + b);
+    b = Date.now();
+    let sizeTable = table.length;
+    while(sizeTable > 1){
+        let right = table[sizeTable-1];
+        if(right.stat != 0){
+            let left = table[sizeTable - 2];
+            let node = {stat: (left.stat + right.stat), '1': right, '0': left};
+            table.splice(sizeTable - 2, 2, node);
+            dSortInvert(table, sizeTable-2, fSort);
+
+        }
+        table.splice(--sizeTable, 1);
+    }
+
+    b = Date.now() - b;
+    logger.info("Создание дерева " + b);
+    b = Date.now();
+    recursive(endTable, table[0], '');
+
+    b = Date.now() - b;
+    logger.info("Создание таблицы " + b);
+
+    return endTable;
+};
+
+
+module.exports.encode = (base64) => {
     let a = Date.now();
     base64 = base64.replace(/^data:image\/png;base64,/,"");
     a = Date.now() - a;
@@ -42,47 +84,10 @@ module.exports.archivator = (base64) => {
     new PNG({ filterType:4 }).parse( new Buffer(base64, 'base64'), (err, data) =>
     {
         if(err) throw err;
-         a = Date.now()-1;
+         a = Date.now()-a;
+         d = data.data;
         logger.info("Парсинг в PNG " + a);
-         a = Date.now();
-        let d= data.data;
-        let table = [];
-        a = Date.now() - a;
-        logger.info("Создание переменных " + a);
-        a = Date.now();
-        for (let i = 0; i< 256; i++){
-            table.push({'name': i, 'stat': 1});
-        }
-        for(let i = 0, dataLength = d.length; i < dataLength; i++) {
-            table[d[i]].stat++
-        }
-        a = Date.now() - a;
-        logger.info("Заполнение массива " + a);
-        a = Date.now();
-        table.sort();
-        a = Date.now() - a;
-        logger.info("Cортровка массива " + a);
-        a = Date.now();
-        let sizeTable = table.length;
-        while(sizeTable > 1){
-            let right = table[sizeTable-1];
-            if(right.stat != 0){
-                let left = table[sizeTable - 2];
-                let node = {stat: (left.stat + right.stat), '1': right, '0': left};
-                table.splice(sizeTable - 2, 2, node);
-                dSortInvert(table, sizeTable-2, fSort);
-
-            }
-            table.splice(--sizeTable, 1);
-        }
-
-        a = Date.now() - a;
-        logger.info("Создание дерева " + a);
-        a = Date.now();
-       recursive(endTable, table[0], '');
-
-         a = Date.now() - a;
-         logger.info("Создание таблицы " + a);
+        let endTable = createCodeTable(d);
         a = Date.now();
         let end = '';
         for(let i = 0, dataLength = d.length; i < dataLength; i++) {
