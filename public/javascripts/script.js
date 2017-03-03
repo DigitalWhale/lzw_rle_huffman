@@ -56,7 +56,7 @@ window.onload = () =>{
     //Отображаем превью фильтров
     let cameraInterval = setInterval(() => {
         videoToCanvas();
-        socket.emit("sendVideo", {imageData: canvVideo.toDataURL("image/bmp")})
+        socket.emit("sendVideo", {imageData: canvVideo.toDataURL()})
     }, 40 );
 
 };

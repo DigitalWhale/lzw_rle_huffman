@@ -9,7 +9,11 @@ module.exports = (module) => {
                 colorize: true,
                 level: 'debug',
                 label: path
-            })
+            }),
+            new (winston.transports.File)({
+                name: 'huffman',
+                filename: './log/huffman.log',
+                level: 'debug' })
         ]
     })
 };

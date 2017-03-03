@@ -9,6 +9,8 @@
     "body-parser": "~1.16.0",
     "debug": "~2.6.0",
     "express": "4.14.1",
+    "png.js": "0.2.1",
+    "pngjs": "3.0.1",
     "socket.io": "1.7.3",
     "winston": "^2.3.1"
   }

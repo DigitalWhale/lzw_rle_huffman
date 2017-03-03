@@ -1,6 +1,6 @@
 'use strict';
-const log = require("./libs/log")(module);
-const base64_bmp = require("./libs/base64_bitmap");
+const log = require("./libs/logger")(module);
+const png_archivator = require('./libs/huffman');
 let io;
 
 
@@ -20,7 +20,8 @@ module.exports.start  = () => {
 
         //Тест отправки видео назад
         client.on("sendVideo", (req) => {
-            client.emit("resultVideo", {req});
+           png_archivator.archivator(req.imageData);
+            // client.emit("resultVideo", {req});
         });
     });
 };
