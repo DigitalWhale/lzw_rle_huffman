@@ -1,8 +1,25 @@
 'use strict';
+
 const log = require("./libs/logger")(module);
-const png_archivator = require('./libs/huffman');
+const huffman = require('./libs/huffman');
+const PNG = require('pngjs').PNG;
 let io;
 
+const compression = (base64) => {
+    base64 = base64.replace(/^data:image\/png;base64,/,"");
+    new PNG({ filterType:4 }).parse( new Buffer(base64, 'base64'), (err, data) =>
+    {
+        if(err) throw err;
+        let a = Date.now();
+        console.log("encode");
+        let bin = huffman.encode(data.data);
+        console.log("decode");
+        huffman.decode(bin.decode, bin.obj);
+        console.log("end");
+        a = Date.now() - a;
+        console.log(a);
+    });
+};
 
 module.exports.Socket = (http) => {
     io = require("socket.io")(http);
@@ -20,7 +37,7 @@ module.exports.start  = () => {
 
         //Тест отправки видео назад
         client.on("sendVideo", (req) => {
-           png_archivator.encode(req.imageData);
+           compression(req.imageData);
             // client.emit("resultVideo", {req});
         });
     });

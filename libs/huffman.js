@@ -1,29 +1,45 @@
-let PNG = require('pngjs').PNG;
-let ADarray = require('./AutosortDynamicArray').AArray;
 let logger = require('./logger')(module);
 
-//{name: 255, statistic: 123}
-let fSort = (a, b) => {
+//{name: 255, stat: 123}
+const fSort = (a, b) => {
     if(a.stat < b.stat) return 1;
     else return -1;
 };
 
-let recursive = (endTable, obj, str) => {
-    if(obj['0'] !== undefined){ recursive(endTable, obj['0'], str + '0'); }
+const recursive = (encTable, decTable, obj, str) => {
+    if(obj['0'] !== undefined){ recursive(encTable, decTable, obj['0'], str + '0'); }
     else {
         obj['path'] = str;
-        endTable[obj.name] = obj.path;
+        encTable[obj.name] = obj.path;
+        decTable[obj.path] = obj.name;
     }
 
-    if(obj['1'] !== undefined){ recursive(endTable, obj['1'], str + '1'); }
+    if(obj['1'] !== undefined){ recursive(encTable, decTable, obj['1'], str + '1'); }
     else {
         obj['path'] = str;
-        endTable[obj.name] = obj.path;
+        encTable[obj.name] = obj.path;
+        decTable[obj.path] = obj.name;
     }
 };
-let endTable = {};
 
-let dSortInvert = (arr, index, typeSort) => {
+const tree = (table) => {
+    table.sort();
+    let sizeTable = table.length;
+    let right, left, node;
+    while(sizeTable > 1){
+        right = table[sizeTable-1];
+        if(right.stat != 0){
+            left = table[sizeTable - 2];
+            node = {stat: (left.stat + right.stat), '1': right, '0': left};
+            table.splice(sizeTable - 2, 2, node);
+            dSortInvert(table, sizeTable-2, fSort);
+
+        }
+        table.splice(--sizeTable, 1);
+    }
+};
+
+const dSortInvert = (arr, index, typeSort) => {
     while(index != 0 && typeSort(arr[index], arr[index-1]) == -1){
         let buffer = arr[index];
         arr[index] = arr[index-1];
@@ -33,67 +49,35 @@ let dSortInvert = (arr, index, typeSort) => {
 };
 
 
-let createCodeTable = (imgData) => {
-    let b = Date.now();
+const createCodeTable = (imgData) => {
     let table = [];
-    let endTable = {};
     for (let i = 0; i< 256; i++){
         table.push({'name': i, 'stat': 1});
     }
     for(let i = 0, dataLength = imgData.length; i < dataLength; i++) {
         table[imgData[i]].stat++
     }
-    b = Date.now() - b;
-    logger.info("Заполнение массива " + b);
-    b = Date.now();
-    table.sort();
-    b = Date.now() - b;
-    logger.info("Cортровка массива " + b);
-    b = Date.now();
-    let sizeTable = table.length;
-    while(sizeTable > 1){
-        let right = table[sizeTable-1];
-        if(right.stat != 0){
-            let left = table[sizeTable - 2];
-            let node = {stat: (left.stat + right.stat), '1': right, '0': left};
-            table.splice(sizeTable - 2, 2, node);
-            dSortInvert(table, sizeTable-2, fSort);
+    tree(table);
+    let encodingTable = {};
+    let decodingTable = {};
+    recursive(encodingTable, decodingTable, table[0], '');
+    return [encodingTable, decodingTable];
+};
 
+module.exports.encode = (data) => {
+        const endTable = createCodeTable(data);
+        let imgData = [];
+
+        for(let i = 0, dataLength = data.length; i < dataLength; i++) {
+            imgData[i] = endTable[0][data[i]];
         }
-        table.splice(--sizeTable, 1);
+        return {decode: endTable[1], obj: imgData};
+};
+
+module.exports.decode = (decTable, obj) => {
+    for(let i = 0; i < obj.length; i++){
+        obj[i] = decTable[obj[i]];
     }
-
-    b = Date.now() - b;
-    logger.info("Создание дерева " + b);
-    b = Date.now();
-    recursive(endTable, table[0], '');
-
-    b = Date.now() - b;
-    logger.info("Создание таблицы " + b);
-
-    return endTable;
+    return obj;
 };
 
-
-module.exports.encode = (base64) => {
-    let a = Date.now();
-    base64 = base64.replace(/^data:image\/png;base64,/,"");
-    a = Date.now() - a;
-    logger.info("Обрезка base84 " + a);
-     a = Date.now();
-    new PNG({ filterType:4 }).parse( new Buffer(base64, 'base64'), (err, data) =>
-    {
-        if(err) throw err;
-         a = Date.now()-a;
-         d = data.data;
-        logger.info("Парсинг в PNG " + a);
-        let endTable = createCodeTable(d);
-        a = Date.now();
-        let end = '';
-        for(let i = 0, dataLength = d.length; i < dataLength; i++) {
-           end += endTable[d[i]];
-        }
-        a = Date.now() - a;
-        logger.info("Кодировка " + a);
-    });
-};
