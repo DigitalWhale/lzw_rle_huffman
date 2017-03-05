@@ -2,22 +2,24 @@
 
 const log = require("./libs/logger")(module);
 const huffman = require('./libs/huffman');
+const rle = require('./libs/rle');
 const PNG = require('pngjs').PNG;
 let io;
 
-const compression = (base64) => {
+const compression = (base64, client) => {
     base64 = base64.replace(/^data:image\/png;base64,/,"");
     new PNG({ filterType:4 }).parse( new Buffer(base64, 'base64'), (err, data) =>
     {
         if(err) throw err;
-        let a = Date.now();
+        let bin;
+        bin = huffman.encode(data.data);
+        bin.stat.timeDecode = huffman.decode(bin.decode, bin.obj);
+        client.emit('codeHuffman', bin);
         console.log("encode");
-        let bin = huffman.encode(data.data);
+        bin = rle.encode(data.data);
         console.log("decode");
-        huffman.decode(bin.decode, bin.obj);
-        console.log("end");
-        a = Date.now() - a;
-        console.log(a);
+        bin.stat.timeDecode = rle.decode(bin.obj);
+        client.emit('codeRLE', bin);
     });
 };
 
@@ -36,8 +38,8 @@ module.exports.start  = () => {
         });
 
         //Тест отправки видео назад
-        client.on("sendVideo", (req) => {
-           compression(req.imageData);
+        client.on("sendScreen", (req) => {
+           compression(req.imageData, client);
             // client.emit("resultVideo", {req});
         });
     });

@@ -1,25 +1,29 @@
-let logger = require('./logger')(module);
-
 //{name: 255, stat: 123}
 const fSort = (a, b) => {
     if(a.stat < b.stat) return 1;
     else return -1;
 };
 
-const recursive = (encTable, decTable, obj, str) => {
-    if(obj['0'] !== undefined){ recursive(encTable, decTable, obj['0'], str + '0'); }
+const recursiveCreate = (encTable/*, decTable*/, obj, str) => {
+    if(obj['0'] !== undefined){ recursiveCreate(encTable/*, decTable*/, obj['0'], str + '0'); }
     else {
         obj['path'] = str;
         encTable[obj.name] = obj.path;
-        decTable[obj.path] = obj.name;
+     //   decTable[obj.path] = obj.name;
     }
 
-    if(obj['1'] !== undefined){ recursive(encTable, decTable, obj['1'], str + '1'); }
+    if(obj['1'] !== undefined){ recursiveCreate(encTable/*, decTable*/, obj['1'], str + '1'); }
     else {
         obj['path'] = str;
         encTable[obj.name] = obj.path;
-        decTable[obj.path] = obj.name;
+       // decTable[obj.path] = obj.name;
     }
+};
+
+const recursiveFindName = (obj, str, index) => {
+    let node = obj[str[index]];
+    if(node !== undefined){return recursiveFindName(node, str, ++index); }
+    return [obj.name, index];
 };
 
 const tree = (table) => {
@@ -59,25 +63,36 @@ const createCodeTable = (imgData) => {
     }
     tree(table);
     let encodingTable = {};
-    let decodingTable = {};
-    recursive(encodingTable, decodingTable, table[0], '');
-    return [encodingTable, decodingTable];
+    //let decodingTable = {};
+    recursiveCreate(encodingTable/*, decodingTable*/, table[0], '');
+    //return [encodingTable, decodingTable];
+    return [encodingTable, table[0]];
 };
 
 module.exports.encode = (data) => {
+        let a = Date.now();
         const endTable = createCodeTable(data);
-        let imgData = [];
-
+        let str = '';
         for(let i = 0, dataLength = data.length; i < dataLength; i++) {
-            imgData[i] = endTable[0][data[i]];
+            str += endTable[0][data[i]];
         }
-        return {decode: endTable[1], obj: imgData};
+        a = Date.now() - a;
+        let per = str.length/(data.length*8)*100;
+        return {decode: endTable[1], obj: str, stat: {timeEncode: a, per: 100-per}};
 };
 
-module.exports.decode = (decTable, obj) => {
-    for(let i = 0; i < obj.length; i++){
-        obj[i] = decTable[obj[i]];
+module.exports.decode = (tree, obj) => {
+    let a = Date.now();
+    let index = 0;
+    let data = [];
+    let out = [];
+    let len = obj.length;
+    while (index < len){
+        out = recursiveFindName(tree, obj, index);
+        data.push(out[0]);
+        index = out[1];
     }
-    return obj;
+    a = Date.now() - a;
+    return a;
 };
 
