@@ -3,8 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build-js": "browserify browserify/script.js > public/javascripts/script.js",
-    "watch-js": "watchify browserify/script.js -o public/javascripts/script.js",
     "start-dev": "nodemon index.js --development",
     "start-prod": "nodemon index.js --production"
   },
