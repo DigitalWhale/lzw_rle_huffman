@@ -12,7 +12,7 @@ module.exports = (module) => {
             }),
             new (winston.transports.File)({
                 name: 'huffman',
-                filename: './log/huffman.log',
+                filename: './log/log.log',
                 level: 'debug' })
         ]
     })

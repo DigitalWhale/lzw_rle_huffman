@@ -1,7 +1,7 @@
 {
   "name": "data-ompressiontest",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "author": "Yaroslva Zhivrin aka DigitalWhale",
   "scripts": {
     "start-dev": "nodemon index.js --development",
     "start-prod": "nodemon index.js --production"
@@ -10,13 +10,8 @@
     "body-parser": "~1.16.0",
     "debug": "~2.6.0",
     "express": "4.14.1",
-    "png.js": "0.2.1",
     "pngjs": "3.0.1",
     "socket.io": "1.7.3",
     "winston": "^2.3.1"
-  },
-  "devDependencies": {
-    "browserify": "^14.1.0",
-    "watchify": "^3.9.0"
   }
 }

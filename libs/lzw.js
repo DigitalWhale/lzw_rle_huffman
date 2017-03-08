@@ -9,35 +9,26 @@ module.exports.encode = (data) => {
     let a = Date.now();
     let dictionary = {};
     for(let i = 0; i < 256; i++){
-        dictionary[String.fromCharCode(i)] = i.toString(2);
+        dictionary[String.fromCharCode(i)] = i;
     }
-    let max = (255).toString(2);
-//abacabadabacabae
-    a = Date.now() - a;
-    console.log('Создание словаря' + a);
-
-    a = Date.now();
+    let max = 256;
     let series = String.fromCharCode(data[0]);
     let code = [];
-//code.push(dictionary[series]);
-
     for(let i = 1; i < data.length; i++){
         if(series+String.fromCharCode(data[i]) in dictionary){
             series +=String.fromCharCode(data[i]);
         }
         else {
             code.push(dictionary[series]);
-            max = dictionary[series+String.fromCharCode(data[i])] = (parseInt(max,2)+1).toString(2);
+            dictionary[series+String.fromCharCode(data[i])] = max++;
             series = String.fromCharCode(data[i]);
         }
     }
     code.push(dictionary[series]);
     a = Date.now() - a;
-    console.log('Обновление словаря' + a);
     let per = weight(code)/data.length*100;
-    console.log("Сжатие " + per);
-    //return {obj: code, stat: {timeEncode: a, per: 100 - per}};
-    return code
+    return {obj: code, stat: {timeEncode: a, per: 100 - per}};
+   // return code;
 };
 
 module.exports.decode = (code) => {
@@ -45,17 +36,13 @@ module.exports.decode = (code) => {
     let dictionary = {};
     //Создаем словарь
     for(let i = 0; i < 256; i++){
-        dictionary[i.toString(2)] = i.toString();
+        dictionary[i] = i.toString();
     }
 
     //Указываем последний элемент
-     let max = (255).toString(2);
-//let decodeStr = [];
+     let max = 256;
     let decodeStr = '';
-
     let OCode, NCode;
-    //Серия
-    let series = '';
     //Текущий элемент
     let elem;
     OCode = code[0];
@@ -63,20 +50,17 @@ module.exports.decode = (code) => {
     for(let i = 1; i < code.length; i++) {
         NCode = code[i];
         if(NCode in dictionary){
-            series = ','+dictionary[NCode];
+            decodeStr += ','+dictionary[NCode];
+            elem = dictionary[NCode].match(/\d+/);
         }
         else {
-            series = ','+dictionary[OCode]+','+elem;
+            decodeStr += ','+dictionary[OCode]+','+elem;
+            elem = dictionary[OCode].match(/\d+/);
         }
-        decodeStr +=series;
-        elem = series.match(/\d+/);
-        max = (parseInt(max,2)+1).toString(2);
-        dictionary[max] = dictionary[OCode]+','+elem;
+        dictionary[max++] = dictionary[OCode]+','+elem;
         OCode = NCode;
     }
     decodeStr = decodeStr.split(',');
-    //console.log(decodeStr.length);
     a = Date.now() - a;
-    console.log(a);
-return decodeStr;
+    return a;
 };

@@ -13,16 +13,16 @@ const compression = (base64, client) => {
     {
         if(err) throw err;
         let bin;
-        // bin = huffman.encode(data.data);
-        // bin.stat.timeDecode = huffman.decode(bin.decode, bin.obj);
-        // client.emit('codeHuffman', bin);
-        //
-        // bin = rle.encode(data.data);
-        // bin.stat.timeDecode = rle.decode(bin.obj);
-        // client.emit('codeRLE', bin);
-        console.log("kek")
+        bin = huffman.encode(data.data);
+        bin.stat.timeDecode = huffman.decode(bin.decode, bin.obj);
+        client.emit('codeHuffman', bin);
+
+        bin = rle.encode(data.data);
+        bin.stat.timeDecode = rle.decode(bin.obj);
+        client.emit('codeRLE', bin);
+
         bin = lzw.encode(data.data);
-        bin = lzw.decode(bin);
+        bin.stat.timeDecode = lzw.decode(bin.obj);
         client.emit('codeLZW', bin);
     });
 };

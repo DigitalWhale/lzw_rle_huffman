@@ -1,7 +1,7 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color:#f1f1f1;
+  background-color: #595959;
 }
 
 a {
@@ -10,4 +10,8 @@ a {
 
 #vid{
   display: none;
+}
+
+.row{
+  padding-bottom: 50px;
 }
