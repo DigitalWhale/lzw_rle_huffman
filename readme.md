@@ -11,7 +11,7 @@ Installation
 
 Requirements
 ------------------
-`nodemon: npm i -g nodemon`
+nodemon: `npm i -g nodemon`
 
 Usage
 ------------------
